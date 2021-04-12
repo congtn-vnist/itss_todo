@@ -5,14 +5,10 @@ import TodoItem from './TodoItem';
 import Input from './Input';
 import Filter from './Filter';
 
+import useStorage from '../hooks/useStorage';
+
  function Todo() {
-   const [items, putItems] = React.useState([
-     
-     { key: getKey(), text: '日本語の宿題', done: false },
-     { key: getKey(), text: 'reactを勉強する', done: false },
-     { key: getKey(), text: '明日の準備をする', done: false },
-    
-   ]);
+    const [items, putItems, clearItems] = useStorage();
 
    const [filter, setFilter] = React.useState('ALL');
 
@@ -22,15 +18,30 @@ import Filter from './Filter';
      if (filter === 'DONE') return item.done;
    });
 
+   const handleCheck = checked => {
+    const newItems = items.map(item => {
+     if (item.key === checked.key) {
+       item.done = !item.done;
+     }
+     return item;
+   });
+   putItems(newItems);
+ };
+
    const handleAdd = text => {
     putItems([...items, { key: getKey(), text, done: false }]);
   };
 
   const handleFilterChange = value => setFilter(value);
    return (
-     <div className="panel">
+    <article class="panel is-danger">
        <div className="panel-heading">
-         ITSS ToDoアプリ
+       <span class="icon-text">
+           <span class="icon">
+             <i class="fas fa-calendar-check"></i>
+           </span>
+           <span> ITSS Todoアプリ</span>
+         </span>
        </div>
        <Input onAdd={handleAdd} />
        <Filter
@@ -47,7 +58,12 @@ import Filter from './Filter';
        <div className="panel-block">
        {displayItems.length} items
        </div>
-     </div>
+       <div className="panel-block">
+         <button className="button is-light is-fullwidth" onClick={clearItems}>
+           全てのToDoを削除
+         </button>
+       </div>
+       </article>
    );
  }
 
