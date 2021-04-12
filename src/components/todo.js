@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 
- import {getKey} from "../lib/util";
+import {getKey} from "../lib/util";
+import TodoItem from './TodoItem';
+import Input from './Input';
+import Filter from './Filter';
 
  function Todo() {
    const [items, putItems] = React.useState([
@@ -11,24 +14,38 @@ import React, { useState } from 'react';
     
    ]);
 
+   const [filter, setFilter] = React.useState('ALL');
+
+   const displayItems = items.filter(item => {
+     if (filter === 'ALL') return true;
+     if (filter === 'TODO') return !item.done;
+     if (filter === 'DONE') return item.done;
+   });
+
    const handleAdd = text => {
     putItems([...items, { key: getKey(), text, done: false }]);
   };
 
+  const handleFilterChange = value => setFilter(value);
    return (
      <div className="panel">
        <div className="panel-heading">
          ITSS ToDoアプリ
        </div>
        <Input onAdd={handleAdd} />
-       {items.map(item => (
-         <label className="panel-block">
-             <input type="checkbox" />
-             {item.text}
-         </label>
+       <Filter
+         onChange={handleFilterChange}
+         value={filter}
+       />
+       {displayItems.map(item => (
+         <TodoItem 
+           key={item.key}
+           item={item}
+           onCheck={handleCheck}
+         />
        ))}
        <div className="panel-block">
-         {items.length} items
+       {displayItems.length} items
        </div>
      </div>
    );
