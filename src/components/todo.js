@@ -5,10 +5,10 @@ import TodoItem from './TodoItem';
 import Input from './Input';
 import Filter from './Filter';
 
-import useStorage from '../hooks/useStorage';
+import useFirestore from '../hooks/useFirestore';
 
  function Todo() {
-    const [items, putItems, clearItems] = useStorage();
+    const [items, addItem, updateItem, clearItems] = useFirestore();
 
    const [filter, setFilter] = React.useState('ALL');
 
@@ -19,17 +19,11 @@ import useStorage from '../hooks/useStorage';
    });
 
    const handleCheck = checked => {
-    const newItems = items.map(item => {
-     if (item.key === checked.key) {
-       item.done = !item.done;
-     }
-     return item;
-   });
-   putItems(newItems);
+    updateItem(checked);
  };
 
    const handleAdd = text => {
-    putItems([...items, { key: getKey(), text, done: false }]);
+     addItem({ text, done: false });
   };
 
   const handleFilterChange = value => setFilter(value);
@@ -50,7 +44,7 @@ import useStorage from '../hooks/useStorage';
        />
        {displayItems.map(item => (
          <TodoItem 
-           key={item.key}
+           key={item.id}
            item={item}
            onCheck={handleCheck}
          />
